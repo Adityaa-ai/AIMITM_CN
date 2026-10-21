@@ -10,7 +10,7 @@
 <body>
     <header class="topbar">
         <div class="brand">🛡️ MITM <span>SHIELD</span></div>
-        <div class="status">● Detection Engine Online</div>
+        <div class="status" id="engineStatus">● Detection Engine Online</div>
     </header>
 
     <main class="container">
@@ -20,17 +20,156 @@
             <p>Analyze traffic indicators with our machine-learning prototype.</p>
         </section>
 
+        <!-- EXISTING RANDOM FOREST STATISTICS -->
         <section class="stats">
-            <article class="card"><p>ML Model</p><h2 id="model">Random Forest</h2></article>
-            <article class="card"><p>Test Accuracy*</p><h2 id="accuracy">Loading...</h2></article>
-            <article class="card"><p>Total Scans</p><h2 id="totalScans">0</h2></article>
-            <article class="card"><p>Suspicious Results</p><h2 id="suspiciousScans">0</h2></article>
+            <article class="card">
+                <p>Manual Analysis Model</p>
+                <h2 id="model">Random Forest</h2>
+            </article>
+            <article class="card">
+                <p>Synthetic Test Accuracy*</p>
+                <h2 id="accuracy">Loading...</h2>
+            </article>
+            <article class="card">
+                <p>Total Manual Scans</p>
+                <h2 id="totalScans">0</h2>
+            </article>
+            <article class="card">
+                <p>Suspicious Manual Results</p>
+                <h2 id="suspiciousScans">0</h2>
+            </article>
         </section>
 
+        <!-- NEW LIVE MONITOR -->
+        <section class="panel live-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">SCAPY · REAL-TIME CAPTURE</p>
+                    <h2>Live Packet Monitor</h2>
+                    <p class="muted">
+                        Capture traffic from your selected local network adapter.
+                    </p>
+                </div>
+                <span id="liveBadge" class="live-badge">STOPPED</span>
+            </div>
+
+            <div class="monitor-controls">
+                <button type="button" id="startMonitor" class="primary-button">
+                    ▶ Start Monitoring
+                </button>
+                <button type="button" id="stopMonitor" class="secondary-button" disabled>
+                    ■ Stop Monitoring
+                </button>
+                <span id="liveMessage" class="muted" role="status">
+                    Monitoring has not started.
+                </span>
+            </div>
+
+            <p class="muted interface-label">
+                Interface: <strong id="liveInterface">Not selected</strong>
+            </p>
+
+            <div class="live-metrics">
+                <article class="metric-card">
+                    <p>Packets / Second</p>
+                    <h3 id="livePps">--</h3>
+                </article>
+                <article class="metric-card">
+                    <p>Bytes / Second</p>
+                    <h3 id="liveBps">--</h3>
+                </article>
+                <article class="metric-card">
+                    <p>Unique Source IPs</p>
+                    <h3 id="liveIps">--</h3>
+                </article>
+                <article class="metric-card">
+                    <p>Unique Source MACs</p>
+                    <h3 id="liveMacs">--</h3>
+                </article>
+                <article class="metric-card">
+                    <p>ARP Packets / Second</p>
+                    <h3 id="liveArp">--</h3>
+                </article>
+                <article class="metric-card">
+                    <p>MAC Mapping Changes</p>
+                    <h3 id="liveMacChanges">--</h3>
+                </article>
+            </div>
+
+            <div class="live-detection">
+                <div>
+                    <p class="muted">Isolation Forest Status</p>
+                    <h3 id="liveClassification">Waiting for monitoring</h3>
+                    <p id="liveExplanation" class="muted">
+                        Start monitoring to collect traffic features.
+                    </p>
+                </div>
+                <div class="anomaly-score">
+                    <p class="muted">Anomaly Score</p>
+                    <h3 id="liveAnomalyScore">--</h3>
+                    <p class="muted">Model decision value, not a probability</p>
+                </div>
+            </div>
+
+            <p class="muted">
+                Baseline calibration:
+                <strong id="baselineProgress">0 / 12 windows</strong>
+            </p>
+            <div class="progress baseline-progress">
+                <div id="baselineBar"></div>
+            </div>
+
+            <p id="liveError" class="error-message" role="alert" hidden></p>
+
+            <div class="table-wrap live-history">
+                <h3>Live Traffic History</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Packets/sec</th>
+                            <th>ARP/sec</th>
+                            <th>Source IPs</th>
+                            <th>Classification</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liveHistory">
+                        <tr><td colspan="5">No live traffic windows yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-wrap live-history">
+                <h3>Live Security Events</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Event</th>
+                            <th>Details</th>
+                            <th>Severity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liveEvents">
+                        <tr><td colspan="4">No live events yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="muted disclaimer">
+                An anomaly or ARP mapping change is a signal to investigate,
+                not proof of a Man-in-the-Middle attack.
+            </p>
+        </section>
+
+        <!-- EXISTING MANUAL ANALYZER -->
         <section class="workspace">
             <article class="panel">
-                <h2>Traffic Analysis</h2>
-                <p class="muted">Enter sample values to test the detector.</p>
+                <h2>Manual Traffic Analysis</h2>
+                <p class="muted">
+                    Enter sample values to test the Random Forest prototype.
+                </p>
+
                 <form id="scanForm">
                     <label for="arp_rate">ARP requests per interval</label>
                     <input id="arp_rate" type="number" min="0" max="100" value="4" required>
@@ -52,25 +191,32 @@
             </article>
 
             <article class="panel">
-                <h2>Detection Result</h2>
+                <h2>Manual Detection Result</h2>
                 <div id="result" class="result empty">
                     <h3>Awaiting Analysis</h3>
                     <p>Submit traffic features to view the prediction.</p>
                 </div>
                 <div class="risk-heading">
-                    <span>Model attack score</span><strong id="riskScore">--%</strong>
+                    <span>Random Forest attack score</span>
+                    <strong id="riskScore">--%</strong>
                 </div>
                 <div class="progress"><div id="riskBar"></div></div>
-                <p class="muted disclaimer">*Synthetic data only. This score is not proof of a real attack.</p>
+                <p class="muted disclaimer">
+                    *Trained on synthetic data. This score is not proof of a real attack.
+                </p>
             </article>
         </section>
 
         <section class="panel history">
-            <h2>Recent Scan History</h2>
+            <h2>Recent Manual Scan History</h2>
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>Time</th><th>Classification</th><th>Model Score</th></tr></thead>
-                    <tbody id="alertTable"><tr><td colspan="3">No scans performed yet.</td></tr></tbody>
+                    <thead>
+                        <tr><th>Time</th><th>Classification</th><th>Model Score</th></tr>
+                    </thead>
+                    <tbody id="alertTable">
+                        <tr><td colspan="3">No scans performed yet.</td></tr>
+                    </tbody>
                 </table>
             </div>
         </section>
