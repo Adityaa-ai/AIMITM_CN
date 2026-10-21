@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITM Shield | AI Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">🛡️ MITM <span>SHIELD</span></div>
+        <div class="status">● Detection Engine Online</div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <p class="eyebrow">COMPUTER NETWORKS · SECURITY MONITORING</p>
+            <h1>AI-Based Man-in-the-Middle <span>Detection</span></h1>
+            <p>Analyze traffic indicators with our machine-learning prototype.</p>
+        </section>
+
+        <section class="stats">
+            <article class="card"><p>ML Model</p><h2 id="model">Random Forest</h2></article>
+            <article class="card"><p>Test Accuracy*</p><h2 id="accuracy">Loading...</h2></article>
+            <article class="card"><p>Total Scans</p><h2 id="totalScans">0</h2></article>
+            <article class="card"><p>Suspicious Results</p><h2 id="suspiciousScans">0</h2></article>
+        </section>
+
+        <section class="workspace">
+            <article class="panel">
+                <h2>Traffic Analysis</h2>
+                <p class="muted">Enter sample values to test the detector.</p>
+                <form id="scanForm">
+                    <label for="arp_rate">ARP requests per interval</label>
+                    <input id="arp_rate" type="number" min="0" max="100" value="4" required>
+
+                    <label for="mac_changes">Observed MAC changes</label>
+                    <input id="mac_changes" type="number" min="0" max="10" value="0" required>
+
+                    <label for="gateway_mismatch">Gateway MAC mismatch</label>
+                    <select id="gateway_mismatch">
+                        <option value="0">No mismatch</option>
+                        <option value="1">Mismatch detected</option>
+                    </select>
+
+                    <label for="packet_rate">Packets per interval</label>
+                    <input id="packet_rate" type="number" min="0" max="500" value="80" required>
+
+                    <button id="scanButton" type="submit">Analyze Traffic</button>
+                </form>
+            </article>
+
+            <article class="panel">
+                <h2>Detection Result</h2>
+                <div id="result" class="result empty">
+                    <h3>Awaiting Analysis</h3>
+                    <p>Submit traffic features to view the prediction.</p>
+                </div>
+                <div class="risk-heading">
+                    <span>Model attack score</span><strong id="riskScore">--%</strong>
+                </div>
+                <div class="progress"><div id="riskBar"></div></div>
+                <p class="muted disclaimer">*Synthetic data only. This score is not proof of a real attack.</p>
+            </article>
+        </section>
+
+        <section class="panel history">
+            <h2>Recent Scan History</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Time</th><th>Classification</th><th>Model Score</th></tr></thead>
+                    <tbody id="alertTable"><tr><td colspan="3">No scans performed yet.</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>MITM Shield · Computer Networks Mini Project</footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
