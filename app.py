@@ -123,4 +123,4 @@ def get_alerts():
 if __name__ == "__main__":
     print("MITM Detection server starting...")
     print(f"Synthetic test-set accuracy: {test_accuracy * 100:.2f}%")
-    app.run(debug=True)
+    app.run(debug=False, host="0.0.0.0", port=5000)
